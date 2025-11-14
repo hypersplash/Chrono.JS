@@ -41,7 +41,7 @@ Some useful information
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/chrono-js.git
+git clone https://github.com/hypersplash/Chrono.js.git
 
 # Open in browser
 open index.html
