@@ -26,8 +26,12 @@ A clock in your browser, that's basically what it is
 
 ## Usage
 
-Just open the HTML file in your browser. That's it.
+There are two ways to do this
 
+1. Through the HTML file (you'll need to download the file from the repository)
+2. Through the GitHub Pages link (you can probably find this on the repository page)
+
+Some useful information
 - Click the **⚙ gear icon** (top right) to open theme settings
 - Click any **theme name** to switch instantly
 - Use the **format toggle** button to switch between 12h and 24h time
