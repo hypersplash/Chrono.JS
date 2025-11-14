@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrono.JS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .clock {
+            font-size: clamp(3rem, 15vw, 8rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .date {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            opacity: 0.6;
+            margin-bottom: 3rem;
+        }
+
+        .settings-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: inherit;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100vh;
+            background: inherit;
+            border-left: 1px solid currentColor;
+            padding: 2rem;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            letter-spacing: 0.1em;
+        }
+
+        .theme-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .theme-option {
+            padding: 1rem;
+            background: transparent;
+            border: 1px solid currentColor;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            text-align: left;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+            color: inherit;
+        }
+
+        .theme-option:hover {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        .theme-option.active {
+            opacity: 1;
+            border-width: 2px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .format-toggle {
+            margin-top: 2rem;
+            padding: 0.5rem 1.5rem;
+            background: transparent;
+            color: inherit;
+            border: 1px solid currentColor;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .format-toggle:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            letter-spacing: 0.2em;
+        }
+
+        .close-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            display: none;
+            z-index: 999;
+        }
+
+        .close-overlay.active {
+            display: block;
+        }
+
+        /* Theme definitions */
+        body.theme-default {
+            background: #323437;
+            color: #d1d0c5;
+        }
+
+        body.theme-dracula {
+            background: #282a36;
+            color: #f8f8f2;
+        }
+
+        body.theme-serika {
+            background: #e2b714;
+            color: #323437;
+        }
+
+        body.theme-nord {
+            background: #2e3440;
+            color: #d8dee9;
+        }
+
+        body.theme-retrocast {
+            background: #2d415b;
+            color: #ffc9a3;
+        }
+
+        body.theme-red-samurai {
+            background: #1a0f0f;
+            color: #e74c3c;
+        }
+
+        body.theme-monokai {
+            background: #272822;
+            color: #f8f8f2;
+        }
+
+        body.theme-8008 {
+            background: #333a45;
+            color: #f44c7f;
+        }
+
+        body.theme-laser {
+            background: #221e2e;
+            color: #ea00d9;
+        }
+
+        body.theme-olivia {
+            background: #2e2d29;
+            color: #e9d5b3;
+        }
+
+        /* Theme-specific text colors for buttons */
+        body.theme-default .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-default .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-default .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-default .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-default .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-default .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-default .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-default .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-default .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-default .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-dracula .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-dracula .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-dracula .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-dracula .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-dracula .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-dracula .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-dracula .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-dracula .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-dracula .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-dracula .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-serika .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-serika .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-serika .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-serika .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-serika .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-serika .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-serika .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-serika .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-serika .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-serika .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-nord .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-nord .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-nord .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-nord .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-nord .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-nord .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-nord .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-nord .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-nord .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-nord .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-retrocast .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-retrocast .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-retrocast .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-retrocast .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-retrocast .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-retrocast .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-retrocast .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-retrocast .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-retrocast .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-retrocast .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-red-samurai .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-red-samurai .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-red-samurai .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-red-samurai .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-red-samurai .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-red-samurai .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-red-samurai .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-red-samurai .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-red-samurai .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-red-samurai .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-monokai .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-monokai .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-monokai .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-monokai .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-monokai .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-monokai .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-monokai .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-monokai .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-monokai .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-monokai .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-8008 .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-8008 .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-8008 .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-8008 .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-8008 .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-8008 .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-8008 .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-8008 .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-8008 .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-8008 .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-laser .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-laser .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-laser .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-laser .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-laser .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-laser .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-laser .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-laser .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-laser .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-laser .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+
+        body.theme-olivia .theme-option[data-theme="default"] { color: #d1d0c5; }
+        body.theme-olivia .theme-option[data-theme="dracula"] { color: #f8f8f2; }
+        body.theme-olivia .theme-option[data-theme="serika"] { color: #e2b714; }
+        body.theme-olivia .theme-option[data-theme="nord"] { color: #d8dee9; }
+        body.theme-olivia .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
+        body.theme-olivia .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
+        body.theme-olivia .theme-option[data-theme="monokai"] { color: #f8f8f2; }
+        body.theme-olivia .theme-option[data-theme="8008"] { color: #f44c7f; }
+        body.theme-olivia .theme-option[data-theme="laser"] { color: #ea00d9; }
+        body.theme-olivia .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+    </style>
+</head>
+<body class="theme-default">
+    <button class="settings-btn" id="settingsBtn">⚙</button>
+    
+    <div class="close-overlay" id="closeOverlay"></div>
+    
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">SETTINGS</div>
+        <div class="theme-list">
+            <button class="theme-option active" data-theme="default">default</button>
+            <button class="theme-option" data-theme="dracula">dracula</button>
+            <button class="theme-option" data-theme="serika">serika</button>
+            <button class="theme-option" data-theme="nord">nord</button>
+            <button class="theme-option" data-theme="retrocast">retrocast</button>
+            <button class="theme-option" data-theme="red-samurai">red samurai</button>
+            <button class="theme-option" data-theme="monokai">monokai</button>
+            <button class="theme-option" data-theme="8008">8008</button>
+            <button class="theme-option" data-theme="laser">laser</button>
+            <button class="theme-option" data-theme="olivia">olivia</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="logo">CHRONO.JS</div>
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date">Loading...</div>
+        <button class="format-toggle" id="formatToggle">Switch to 12h</button>
+    </div>
+
+    <script>
+        let is24Hour = true;
+
+        function updateClock() {
+            const now = new Date();
+            
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            let displayHours = hours;
+            let ampm = '';
+            
+            if (!is24Hour) {
+                ampm = hours >= 12 ? ' PM' : ' AM';
+                displayHours = hours % 12 || 12;
+            }
+            
+            const timeString = 
+                String(displayHours).padStart(2, '0') + ':' +
+                String(minutes).padStart(2, '0') + ':' +
+                String(seconds).padStart(2, '0') + ampm;
+            
+            document.getElementById('clock').textContent = timeString;
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+            document.getElementById('date').textContent = dateString;
+        }
+
+        const formatToggle = document.getElementById('formatToggle');
+        formatToggle.addEventListener('click', () => {
+            is24Hour = !is24Hour;
+            formatToggle.textContent = is24Hour ? 'Switch to 12h' : 'Switch to 24h';
+            updateClock();
+        });
+
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const closeOverlay = document.getElementById('closeOverlay');
+
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.toggle('open');
+            closeOverlay.classList.toggle('active');
+        });
+
+        closeOverlay.addEventListener('click', () => {
+            settingsPanel.classList.remove('open');
+            closeOverlay.classList.remove('active');
+        });
+
+        const themeOptions = document.querySelectorAll('.theme-option');
+        themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.dataset.theme;
+                document.body.className = `theme-${theme}`;
+                
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+  </html>
