@@ -17,7 +17,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
             overflow: hidden;
         }
 
@@ -25,20 +25,18 @@
             text-align: center;
             padding: 2rem;
             position: relative;
+            width: 100%;
+            max-width: 1200px;
         }
 
-        .clock {
-            font-size: clamp(3rem, 15vw, 8rem);
-            font-weight: 300;
-            letter-spacing: 0.1em;
-            margin-bottom: 1rem;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .date {
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            opacity: 0.6;
-            margin-bottom: 3rem;
+        .logo {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            font-size: 1.5rem;
+            opacity: 0.8;
+            letter-spacing: 0.2em;
+            z-index: 10;
         }
 
         .settings-btn {
@@ -57,9 +55,8 @@
             font-size: 1.5rem;
             color: inherit;
             opacity: 0.6;
-            transition: all 0.3s ease;
-            padding: 0;
-            line-height: 1;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 10;
         }
 
         .settings-btn:hover {
@@ -78,7 +75,7 @@
             padding: 2rem;
             transition: right 0.3s ease;
             overflow-y: auto;
-            z-index: 1000;
+            z-index: 1001;
         }
 
         .settings-panel.open {
@@ -92,40 +89,54 @@
             letter-spacing: 0.1em;
         }
 
-        .theme-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+        .settings-section {
+            margin-bottom: 2rem;
         }
 
-        .theme-option {
-            padding: 1rem;
+        .section-label {
+            opacity: 0.6;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .theme-btn, .mode-btn {
+            padding: 0.75rem;
             background: transparent;
             border: 1px solid currentColor;
             border-radius: 5px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 1rem;
-            text-align: left;
-            opacity: 0.6;
+            font-size: 0.9rem;
+            opacity: 0.5;
             transition: all 0.2s ease;
             color: inherit;
         }
 
-        .theme-option:hover {
-            opacity: 1;
-            transform: translateX(5px);
+        .theme-btn:hover, .mode-btn:hover {
+            opacity: 0.8;
         }
 
-        .theme-option.active {
+        .theme-btn.active, .mode-btn.active {
             opacity: 1;
             border-width: 2px;
-            box-shadow: 0 0 10px currentColor;
+        }
+
+        .mode-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         .format-toggle {
-            margin-top: 2rem;
-            padding: 0.5rem 1.5rem;
+            width: 100%;
+            padding: 0.75rem;
             background: transparent;
             color: inherit;
             border: 1px solid currentColor;
@@ -139,16 +150,6 @@
 
         .format-toggle:hover {
             opacity: 1;
-            transform: translateY(-2px);
-        }
-
-        .logo {
-            position: fixed;
-            top: 2rem;
-            left: 2rem;
-            font-size: 1.5rem;
-            opacity: 0.8;
-            letter-spacing: 0.2em;
         }
 
         .close-overlay {
@@ -159,266 +160,313 @@
             height: 100%;
             background: transparent;
             display: none;
-            z-index: 999;
+            z-index: 1000;
         }
 
         .close-overlay.active {
             display: block;
         }
 
-        /* Theme definitions */
-        body.theme-default {
-            background: #323437;
-            color: #d1d0c5;
+        /* Digital Clock */
+        .digital-clock {
+            font-size: clamp(3rem, 15vw, 8rem);
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-variant-numeric: tabular-nums;
         }
 
-        body.theme-dracula {
-            background: #282a36;
-            color: #f8f8f2;
+        .date {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            opacity: 0.6;
+            margin-bottom: 2rem;
         }
 
-        body.theme-serika {
-            background: #e2b714;
-            color: #323437;
+        /* Analog Clock */
+        .analog-clock {
+            width: min(80vw, 400px);
+            height: min(80vw, 400px);
+            margin: 0 auto 2rem;
+            display: none;
         }
 
-        body.theme-nord {
-            background: #2e3440;
-            color: #d8dee9;
+        .analog-clock.active {
+            display: block;
         }
 
-        body.theme-retrocast {
-            background: #2d415b;
-            color: #ffc9a3;
+        /* Flip Clock */
+        .flip-clock {
+            display: none;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 2rem;
+            flex-wrap: wrap;
         }
 
-        body.theme-red-samurai {
-            background: #1a0f0f;
-            color: #e74c3c;
+        .flip-clock.active {
+            display: flex;
         }
 
-        body.theme-monokai {
-            background: #272822;
-            color: #f8f8f2;
+        .flip-group {
+            display: flex;
+            gap: 0.25rem;
         }
 
-        body.theme-8008 {
-            background: #333a45;
-            color: #f44c7f;
+        .flip-card {
+            width: clamp(40px, 8vw, 70px);
+            height: clamp(60px, 12vw, 105px);
+            position: relative;
+            background: currentColor;
+            border-radius: 6px;
+            overflow: hidden;
         }
 
-        body.theme-laser {
-            background: #221e2e;
-            color: #ea00d9;
+        .flip-num {
+            position: absolute;
+            width: 100%;
+            height: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.5rem, 6vw, 3.5rem);
+            font-weight: bold;
+            color: var(--bg);
+            overflow: hidden;
         }
 
-        body.theme-olivia {
-            background: #2e2d29;
-            color: #e9d5b3;
+        .flip-top {
+            top: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            align-items: flex-end;
+            padding-bottom: 0.15em;
         }
 
-        /* Theme-specific text colors for buttons */
-        body.theme-default .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-default .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-default .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-default .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-default .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-default .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-default .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-default .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-default .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-default .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+        .flip-bottom {
+            bottom: 0;
+            align-items: flex-start;
+            padding-top: 0.15em;
+        }
 
-        body.theme-dracula .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-dracula .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-dracula .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-dracula .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-dracula .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-dracula .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-dracula .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-dracula .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-dracula .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-dracula .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+        .flip-sep {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: bold;
+            opacity: 0.6;
+        }
 
-        body.theme-serika .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-serika .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-serika .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-serika .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-serika .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-serika .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-serika .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-serika .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-serika .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-serika .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+        /* Themes */
+        :root {
+            --bg: #323437;
+            --fg: #d1d0c5;
+        }
 
-        body.theme-nord .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-nord .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-nord .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-nord .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-nord .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-nord .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-nord .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-nord .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-nord .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-nord .theme-option[data-theme="olivia"] { color: #e9d5b3; }
-
-        body.theme-retrocast .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-retrocast .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-retrocast .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-retrocast .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-retrocast .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-retrocast .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-retrocast .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-retrocast .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-retrocast .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-retrocast .theme-option[data-theme="olivia"] { color: #e9d5b3; }
-
-        body.theme-red-samurai .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-red-samurai .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-red-samurai .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-red-samurai .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-red-samurai .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-red-samurai .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-red-samurai .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-red-samurai .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-red-samurai .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-red-samurai .theme-option[data-theme="olivia"] { color: #e9d5b3; }
-
-        body.theme-monokai .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-monokai .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-monokai .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-monokai .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-monokai .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-monokai .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-monokai .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-monokai .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-monokai .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-monokai .theme-option[data-theme="olivia"] { color: #e9d5b3; }
-
-        body.theme-8008 .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-8008 .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-8008 .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-8008 .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-8008 .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-8008 .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-8008 .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-8008 .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-8008 .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-8008 .theme-option[data-theme="olivia"] { color: #e9d5b3; }
-
-        body.theme-laser .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-laser .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-laser .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-laser .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-laser .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-laser .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-laser .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-laser .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-laser .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-laser .theme-option[data-theme="olivia"] { color: #e9d5b3; }
-
-        body.theme-olivia .theme-option[data-theme="default"] { color: #d1d0c5; }
-        body.theme-olivia .theme-option[data-theme="dracula"] { color: #f8f8f2; }
-        body.theme-olivia .theme-option[data-theme="serika"] { color: #e2b714; }
-        body.theme-olivia .theme-option[data-theme="nord"] { color: #d8dee9; }
-        body.theme-olivia .theme-option[data-theme="retrocast"] { color: #ffc9a3; }
-        body.theme-olivia .theme-option[data-theme="red-samurai"] { color: #e74c3c; }
-        body.theme-olivia .theme-option[data-theme="monokai"] { color: #f8f8f2; }
-        body.theme-olivia .theme-option[data-theme="8008"] { color: #f44c7f; }
-        body.theme-olivia .theme-option[data-theme="laser"] { color: #ea00d9; }
-        body.theme-olivia .theme-option[data-theme="olivia"] { color: #e9d5b3; }
+        body { background: var(--bg); color: var(--fg); }
+        
+        body[data-theme="default"] { --bg: #323437; --fg: #d1d0c5; }
+        body[data-theme="dracula"] { --bg: #282a36; --fg: #f8f8f2; }
+        body[data-theme="serika"] { --bg: #e2b714; --fg: #323437; }
+        body[data-theme="nord"] { --bg: #2e3440; --fg: #d8dee9; }
+        body[data-theme="retrocast"] { --bg: #2d415b; --fg: #ffc9a3; }
+        body[data-theme="samurai"] { --bg: #1a0f0f; --fg: #e74c3c; }
+        body[data-theme="monokai"] { --bg: #272822; --fg: #f8f8f2; }
+        body[data-theme="8008"] { --bg: #333a45; --fg: #f44c7f; }
+        body[data-theme="laser"] { --bg: #221e2e; --fg: #ea00d9; }
+        body[data-theme="olivia"] { --bg: #2e2d29; --fg: #e9d5b3; }
     </style>
 </head>
-<body class="theme-default">
+<body data-theme="default">
+    <div class="logo">CHRONO.JS</div>
+    
     <button class="settings-btn" id="settingsBtn">⚙</button>
     
     <div class="close-overlay" id="closeOverlay"></div>
     
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">SETTINGS</div>
-        <div class="theme-list">
-            <button class="theme-option active" data-theme="default">default</button>
-            <button class="theme-option" data-theme="dracula">dracula</button>
-            <button class="theme-option" data-theme="serika">serika</button>
-            <button class="theme-option" data-theme="nord">nord</button>
-            <button class="theme-option" data-theme="retrocast">retrocast</button>
-            <button class="theme-option" data-theme="red-samurai">red samurai</button>
-            <button class="theme-option" data-theme="monokai">monokai</button>
-            <button class="theme-option" data-theme="8008">8008</button>
-            <button class="theme-option" data-theme="laser">laser</button>
-            <button class="theme-option" data-theme="olivia">olivia</button>
+        
+        <div class="settings-section">
+            <div class="section-label">THEMES</div>
+            <div class="theme-grid" id="themeGrid"></div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="section-label">CLOCK MODE</div>
+            <div class="mode-list" id="modeList"></div>
+        </div>
+        
+        <div class="settings-section">
+            <button class="format-toggle" id="formatToggle">24h / 12h</button>
         </div>
     </div>
 
     <div class="container">
-        <div class="logo">CHRONO.JS</div>
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="date" id="date">Loading...</div>
-        <button class="format-toggle" id="formatToggle">Switch to 12h</button>
+        <div class="digital-clock" id="digitalClock">00:00:00</div>
+        
+        <svg class="analog-clock" id="analogClock" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="96" fill="none" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+            <g id="marks"></g>
+            <line id="hHand" x1="100" y1="100" x2="100" y2="50" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+            <line id="mHand" x1="100" y1="100" x2="100" y2="35" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <line id="sHand" x1="100" y1="100" x2="100" y2="30" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+            <circle cx="100" cy="100" r="4" fill="currentColor"/>
+        </svg>
+        
+        <div class="flip-clock" id="flipClock">
+            <div class="flip-group">
+                <div class="flip-card"><div class="flip-num flip-top" id="fh1t">0</div><div class="flip-num flip-bottom" id="fh1b">0</div></div>
+                <div class="flip-card"><div class="flip-num flip-top" id="fh2t">0</div><div class="flip-num flip-bottom" id="fh2b">0</div></div>
+            </div>
+            <div class="flip-sep">:</div>
+            <div class="flip-group">
+                <div class="flip-card"><div class="flip-num flip-top" id="fm1t">0</div><div class="flip-num flip-bottom" id="fm1b">0</div></div>
+                <div class="flip-card"><div class="flip-num flip-top" id="fm2t">0</div><div class="flip-num flip-bottom" id="fm2b">0</div></div>
+            </div>
+            <div class="flip-sep">:</div>
+            <div class="flip-group">
+                <div class="flip-card"><div class="flip-num flip-top" id="fs1t">0</div><div class="flip-num flip-bottom" id="fs1b">0</div></div>
+                <div class="flip-card"><div class="flip-num flip-top" id="fs2t">0</div><div class="flip-num flip-bottom" id="fs2b">0</div></div>
+            </div>
+        </div>
+        
+        <div class="date" id="date"></div>
     </div>
 
     <script>
-        let is24Hour = true;
+        const themes = ['default', 'dracula', 'serika', 'nord', 'retrocast', 'samurai', 'monokai', '8008', 'laser', 'olivia'];
+        const modes = ['digital', 'analog', 'flip'];
+        
+        let state = {
+            theme: 'default',
+            mode: 'digital',
+            is24h: true,
+            lastUpdate: { h1: -1, h2: -1, m1: -1, m2: -1, s1: -1, s2: -1 }
+        };
+
+        // Initialize themes
+        const themeGrid = document.getElementById('themeGrid');
+        themes.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'theme-btn' + (t === state.theme ? ' active' : '');
+            btn.textContent = t;
+            btn.onclick = () => setTheme(t);
+            themeGrid.appendChild(btn);
+        });
+
+        // Initialize modes
+        const modeList = document.getElementById('modeList');
+        modes.forEach(m => {
+            const btn = document.createElement('button');
+            btn.className = 'mode-btn' + (m === state.mode ? ' active' : '');
+            btn.textContent = m;
+            btn.onclick = () => setMode(m);
+            modeList.appendChild(btn);
+        });
+
+        // Settings panel
+        document.getElementById('settingsBtn').onclick = () => {
+            document.getElementById('settingsPanel').classList.toggle('open');
+            document.getElementById('closeOverlay').classList.toggle('active');
+        };
+
+        document.getElementById('closeOverlay').onclick = () => {
+            document.getElementById('settingsPanel').classList.remove('open');
+            document.getElementById('closeOverlay').classList.remove('active');
+        };
+
+        // Format toggle
+        document.getElementById('formatToggle').onclick = () => {
+            state.is24h = !state.is24h;
+            updateClock();
+        };
+
+        function setTheme(t) {
+            state.theme = t;
+            document.body.setAttribute('data-theme', t);
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === t);
+            });
+        }
+
+        function setMode(m) {
+            state.mode = m;
+            document.getElementById('digitalClock').style.display = m === 'digital' ? 'block' : 'none';
+            document.getElementById('analogClock').classList.toggle('active', m === 'analog');
+            document.getElementById('flipClock').classList.toggle('active', m === 'flip');
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === m);
+            });
+            if (m === 'analog') initAnalog();
+            updateClock();
+        }
+
+        // Analog clock markers
+        function initAnalog() {
+            const g = document.getElementById('marks');
+            g.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                const a = (i * 30 - 90) * Math.PI / 180;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', 100 + 82 * Math.cos(a));
+                line.setAttribute('y1', 100 + 82 * Math.sin(a));
+                line.setAttribute('x2', 100 + 88 * Math.cos(a));
+                line.setAttribute('y2', 100 + 88 * Math.sin(a));
+                line.setAttribute('stroke', 'currentColor');
+                line.setAttribute('stroke-width', i % 3 === 0 ? '2.5' : '1.5');
+                line.setAttribute('opacity', '0.5');
+                g.appendChild(line);
+            }
+        }
 
         function updateClock() {
             const now = new Date();
-            
-            let hours = now.getHours();
-            const minutes = now.getMinutes();
-            const seconds = now.getSeconds();
-            
-            let displayHours = hours;
+            let h = now.getHours();
+            const m = now.getMinutes();
+            const s = now.getSeconds();
+
+            let dispH = h;
             let ampm = '';
-            
-            if (!is24Hour) {
-                ampm = hours >= 12 ? ' PM' : ' AM';
-                displayHours = hours % 12 || 12;
+            if (!state.is24h) {
+                ampm = h >= 12 ? ' PM' : ' AM';
+                dispH = h % 12 || 12;
             }
-            
-            const timeString = 
-                String(displayHours).padStart(2, '0') + ':' +
-                String(minutes).padStart(2, '0') + ':' +
-                String(seconds).padStart(2, '0') + ampm;
-            
-            document.getElementById('clock').textContent = timeString;
-            
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateString = now.toLocaleDateString('en-US', options);
-            document.getElementById('date').textContent = dateString;
+
+            if (state.mode === 'digital') {
+                const pad = n => String(n).padStart(2, '0');
+                document.getElementById('digitalClock').textContent = `${pad(dispH)}:${pad(m)}:${pad(s)}${ampm}`;
+            } else if (state.mode === 'analog') {
+                const hA = ((h % 12) + m / 60) * 30 - 90;
+                const mA = (m + s / 60) * 6 - 90;
+                const sA = s * 6 - 90;
+                document.getElementById('hHand').setAttribute('transform', `rotate(${hA} 100 100)`);
+                document.getElementById('mHand').setAttribute('transform', `rotate(${mA} 100 100)`);
+                document.getElementById('sHand').setAttribute('transform', `rotate(${sA} 100 100)`);
+            } else if (state.mode === 'flip') {
+                const pad = n => String(n).padStart(2, '0');
+                const hs = pad(dispH);
+                const ms = pad(m);
+                const ss = pad(s);
+                
+                updateFlip('h1', hs[0]);
+                updateFlip('h2', hs[1]);
+                updateFlip('m1', ms[0]);
+                updateFlip('m2', ms[1]);
+                updateFlip('s1', ss[0]);
+                updateFlip('s2', ss[1]);
+            }
+
+            document.getElementById('date').textContent = now.toLocaleDateString('en-US', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
         }
 
-        const formatToggle = document.getElementById('formatToggle');
-        formatToggle.addEventListener('click', () => {
-            is24Hour = !is24Hour;
-            formatToggle.textContent = is24Hour ? 'Switch to 12h' : 'Switch to 24h';
-            updateClock();
-        });
+        function updateFlip(id, val) {
+            if (state.lastUpdate[id] === val) return;
+            state.lastUpdate[id] = val;
+            document.getElementById(`f${id}t`).textContent = val;
+            document.getElementById(`f${id}b`).textContent = val;
+        }
 
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const closeOverlay = document.getElementById('closeOverlay');
-
-        settingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.toggle('open');
-            closeOverlay.classList.toggle('active');
-        });
-
-        closeOverlay.addEventListener('click', () => {
-            settingsPanel.classList.remove('open');
-            closeOverlay.classList.remove('active');
-        });
-
-        const themeOptions = document.querySelectorAll('.theme-option');
-        themeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const theme = option.dataset.theme;
-                document.body.className = `theme-${theme}`;
-                
-                themeOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-            });
-        });
-
+        initAnalog();
         updateClock();
         setInterval(updateClock, 1000);
     </script>
