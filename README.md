@@ -1,80 +1,70 @@
 # Chrono.JS
 
-A clock in your browser, that's basically what it is
+Chrono.JS is a lightweight, browser-based clock built with pure HTML, CSS, and JavaScript.
 
 ## Features
 
-- **Real-time clock** using JavaScript's native Date API
-- **10 handpicked themes** from Monkeytype's most iconic colorways
-- **24h/12h format toggle** for your preference
-- **Smooth animations** and transitions throughout
-- **Zero dependencies** - pure HTML, CSS, and JavaScript
-- **Responsive design** that scales beautifully on any screen
+- Real-time clock using the native `Date` API  
+- Ten selectable color themes inspired by Monkeytype  
+- 12-hour and 24-hour time format toggle  
+- Smooth CSS-based animations and transitions  
+- Responsive design for any screen size  
+- No external dependencies
 
 ## Themes
 
-- **default** - Classic gray elegance
-- **dracula** - Dark vampire vibes
-- **serika** - Bold yellow energy
-- **nord** - Arctic minimalism
-- **retrocast** - Nostalgic warmth
-- **red samurai** - Crimson intensity
-- **monokai** - Developer's favorite
-- **8008** - Pink punch
-- **laser** - Cyberpunk neon
-- **olivia** - Creamy sophistication
+- **default** — Neutral gray  
+- **dracula** — Dark mode  
+- **serika** — Yellow accent  
+- **nord** — Cool and minimal  
+- **retrocast** — Warm retro tones  
+- **red samurai** — Red contrast  
+- **monokai** — Classic developer palette  
+- **8008** — Pink highlight  
+- **laser** — Neon aesthetic  
+- **olivia** — Soft cream palette
 
 ## Usage
 
-There are two ways to do this
+Run Chrono.JS in one of the following ways:
 
-1. Through the HTML file (you'll need to download the file from the repository)
-2. Through the GitHub Pages link (you can probably find this on the repository page)
+1. **Locally** — Download or clone the repository and open `index.html` in a browser.  
+2. **Online** — Use the GitHub Pages link available on the repository page.
 
-Some useful information
-- Click the **⚙ gear icon** (top right) to open theme settings
-- Click any **theme name** to switch instantly
-- Use the **format toggle** button to switch between 12h and 24h time
+### Controls
+
+- Click the **⚙️** icon to open settings  
+- Select a theme name to switch instantly  
+- Use the format toggle to change between 12h and 24h  
 - Click outside the settings panel to close it
 
 ## Installation
 
 ```bash
-# Clone the repo
 git clone https://github.com/hypersplash/Chrono.js.git
-
-# Open in browser
+cd Chrono.js
 open index.html
 ```
 
-Or just download the HTML file and double-click it.
+Or download the HTML file and open it directly in a browser.
 
-## Why Chrono.JS?
+## Technical Overview
 
-Sometimes you just need a clean, good-looking clock in your browser. No bloat, no tracking, no BS. Perfect for:
-
-- Keeping a tab open for quick time checks
-- Second monitor eye candy
-- Learning basic web development
-- Appreciating minimalist design
-
-## Technical Details
-
-- Updates every second via `setInterval`
-- Uses `Date.toLocaleDateString()` for properly formatted dates
-- CSS transitions for smooth theme switching
-- Monospace font (`Courier New`) for that typing test aesthetic
-- Fixed positioning for settings panel with slide-in animation
-- Tabular nums for consistent digit width in the clock display
+- Time updated every second via `setInterval`  
+- Date formatted using `Date.toLocaleDateString()`  
+- Smooth theme transitions handled with CSS  
+- Monospace font (`Courier New`) for alignment consistency  
+- Fixed-position settings panel with slide-in animation
 
 ## Contributing
 
-Found a bug? Want to add more themes? PRs are welcome. Keep it minimal, keep it clean.
+Contributions are welcome. Keep additions minimal and stylistically consistent.
 
 ## License
 
-MIT - do whatever you want with it.
+[MIT License](./LICENSE)
 
 ---
 
-Built with ⚙️ and inspired by countless late-night typing sessions on Monkeytype.
+Inspired by late-night typing sessions and minimalist web design.
+May or may not be partially broken and written by AI but who knows?
